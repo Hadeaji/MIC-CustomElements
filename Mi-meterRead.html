@@ -1,0 +1,160 @@
+<template id="mi-temp-meter-read">
+    <style type="text/css">
+        * {
+            font-family: system-ui;
+        }
+
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+            border-radius: 5px;
+            /* 5px rounded corners */
+            margin: 10px;
+            min-width: 400px;
+            padding: 10px;
+        }
+
+        #title {
+            margin: 15px;
+            color: #1f5da6;
+            font-weight: 500;
+        }
+
+        .label {
+            color: #4b4b4b;
+            font-weight: 500;
+            background: #dadada;
+            padding: 5px 15px;
+            margin: 0;
+            font-size: 12px;
+        }
+
+        .value {
+            padding: 5px 15px;
+            margin: 0;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .linkBox {
+            text-align: end;
+            margin: 15px 10px 5px;
+        }
+        .card .linkBox #link{
+            color: #1f5da6;
+            text-decoration: none;
+            margin: 10px;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+
+        table {
+            border: none;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table td,
+        table th {
+            border-left: 1px solid rgba(150, 150, 150, 0.5);
+            border-right: 1px solid rgba(150, 150, 150, 0.5);
+        }
+
+        table td:first-child,
+        table th:first-child {
+            border-left: none;
+        }
+
+        table td:last-child,
+        table th:last-child {
+            border-right: none;
+        }
+    </style>
+
+    <div class="card">
+        <h3 id="title"></h3>
+        <!-- <div id="content"></div> -->
+        <table>
+            <tr id="headRow"></tr>
+            <tr id="dataRow"></tr>
+        </table>
+        <div class="linkBox">
+            <a id="link"></a>
+        </div>
+    </div>
+
+</template>
+
+
+
+<script>
+    const myTemplate = document.querySelector('#mi-temp-meter-read');
+    class MI_METER_READ extends HTMLElement {
+        constructor() {
+            super();
+            this.attachShadow({ mode: 'open' });
+            this.shadowRoot.appendChild(myTemplate.content.cloneNode(true));
+        }
+
+        static get observedAttributes() {
+            return ['title', 'link', 'link-msg', 'value-data', 'label-data'];
+        }
+
+        attributeChangedCallback(attribute, oldValue, newValue) {
+            if (attribute == 'title') {
+                this.shadowRoot.querySelector("#title").innerHTML = newValue;
+            }
+            if (attribute == 'link') {
+                this.shadowRoot.querySelector("#link").href = newValue;
+            }
+            if (attribute == 'link-msg') {
+                this.shadowRoot.querySelector("#link").innerHTML = newValue + " >";
+            }
+
+            if (attribute == 'label-data') {
+                console.log(newValue);
+                let data = JSON.parse(newValue);
+                this.loadTh(data)
+
+            }
+
+            if (attribute == 'value-data') {
+                let data = JSON.parse(newValue);
+                this.loadTd(data)
+            }
+
+
+
+        }
+
+
+
+
+        loadTh(arr) {
+            for (let thData of arr) {
+                let ele = document.createElement("th");
+                ele.innerHTML = thData;
+                ele.className = "label";
+                this.shadowRoot.querySelector("#headRow").appendChild(ele);
+            }
+        }
+
+        loadTd(arr) {
+            for (let thData of arr) {
+                let ele = document.createElement("td");
+                ele.className = "value";
+                ele.innerHTML = thData;
+                this.shadowRoot.querySelector("#dataRow").appendChild(ele);
+            }
+        }
+
+    }
+    customElements.define('mi-meter-read', MI_METER_READ);
+</script>
+
+<mi-meter-read title="Meter Read" link="www.google.com" link-msg="View Meter Details"
+    label-data='["Meter Number","Passed Days", "Current Reading","Previous Reading","Total Used"]'
+    value-data='[1234324, "23 Days", 225, 245,12.5]'>
+</mi-meter-read>
