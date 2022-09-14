@@ -659,6 +659,266 @@
 
   customElements.define("mi-chart", MI_CHART);
 </script>
+<template id="mi-temp-billing-summary">
+  <style type="text/css">
+    * {
+      font-family: system-ui;
+    }
+
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      transition: 0.3s;
+      border-radius: 5px;
+      /* 5px rounded corners */
+      margin: 10px;
+      min-width: 300px;
+      padding: 20px;
+    }
+
+    .row {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(150, 150, 150, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .multi-row {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(150, 150, 150, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sub-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+
+
+    #title {
+      margin: 0 0 15px 0;
+      color: #1f5da6;
+      font-weight: 500;
+    }
+
+    #sectiontitle {
+      margin: 3px 0;
+      color: #06182d;
+      font-weight: 500;
+      font-size: x-large;
+    }
+
+    #comment {
+      color: rgba(128, 128, 128, 0.7);
+      text-decoration: none;
+      margin: 10px 0;
+      font-weight: 500;
+      font-size: 12px;
+    }
+    .label {
+      color: #4b4b4b;
+      font-weight: 500;
+      padding: 5px 0;
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .sub-label {
+    font-weight: 400;
+    padding: 5px 15px;
+    margin: 0;
+    text-align: left;
+    color: #005faa;
+    width: 38%;
+    font-style: italic;
+    }
+
+    .bold-label {
+      color: #4b4b4b;
+    font-weight: 500;
+    padding: 5px 0;
+    margin: 0;
+    font-size: 17px;
+    text-align: left;
+    width: 100%;
+    }
+
+    .total-row{
+      font-weight: 500;
+
+    }
+
+    .first-label {
+      color: #4b4b4b;
+      padding: 5px 0;
+      margin: 0;
+      text-align: left;
+      width: 50%;
+    }
+
+    .sub-label span {
+      color: #a7a7a7;
+      font-weight: 500;
+
+    }
+
+    .value {
+      padding: 5px 15px;
+      margin: 0;
+      font-size: 16px;
+      width: 15%;
+      text-align: right;
+    }
+
+    .linkBox {
+      text-align: end;
+      margin: 15px 10px 5px;
+    }
+
+    .card .linkBox #link {
+      color: #1f5da6;
+      text-decoration: none;
+      margin: 10px;
+      font-weight: 500;
+      font-size: 12px;
+    }
+  </style>
+
+  <div class="card">
+    <h4 id="title"></h4>
+    <h3 id="sectiontitle"></h3>
+    <p id="comment"></p>
+    <div id="content">
+      <div class="row" id="daily-basic-service-charge"></div>
+      <div class="row" id="billing-demand-charge"></div>
+      <div class="row" id="peak-demand-charge"></div>
+      <div class="multi-row" id="EnergyCharge">
+        <div class="sub-row" id="energy-charge-on-peak"></div>
+        <div class="sub-row" id="energy-charge-off-peak"></div>
+      </div>
+      <div class="multi-row" id="FuelCharge">
+        <div class="sub-row" id="fuel-charge-on-peak"></div>
+        <div class="sub-row" id="fuel-charge-off-peak"></div>
+      </div>
+      <div class="row" id="capacity-charge"></div>
+      <div class="row" id="storm-protection-charge"></div>
+      <div class="row" id="energy-conservation-charge"></div>
+      <div class="row" id="environmental-cost-recovery"></div>
+      <div class="sub-row" id="clean-energy-transition-mechanism"></div>
+    </div>
+    <hr class="lastDiv" />
+    <div class="sub-row total-row" id="electric-charges-subtotal"></div>
+  </div>
+</template>
+
+<script>
+  const miTempBillingSummaryTemplate = document.querySelector(
+    "#mi-temp-billing-summary"
+  );
+  class MI_BILLING_SUMMARY extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+      this.shadowRoot.appendChild(
+        miTempBillingSummaryTemplate.content.cloneNode(true)
+      );
+    }
+
+    static get observedAttributes() {
+      return [
+        "title",
+        "sectiontitle",
+        "comment",
+        "clean-energy-transition-mechanism",
+        "environmental-cost-recovery",
+        "energy-conservation-charge",
+        "storm-protection-charge",
+        "capacity-charge",
+        "fuel-charge-off-peak",
+        "fuel-charge-on-peak",
+        "energy-charge-off-peak",
+        "energy-charge-on-peak",
+        "peak-demand-charge",
+        "billing-demand-charge",
+        "daily-basic-service-charge",
+        "total"
+      ];
+    }
+
+    attributeChangedCallback(attribute, oldValue, newValue) {
+      if (attribute == "title") {
+        this.shadowRoot.querySelector("#title").innerHTML =
+          newValue.toUpperCase();
+      } else if (attribute == "sectiontitle") {
+        this.shadowRoot.querySelector("#sectiontitle").innerHTML = newValue;
+      } else if (attribute == "comment") {
+        this.shadowRoot.querySelector("#comment").innerHTML = newValue;
+      } else if (attribute == "total"){
+        this.loadTotal(newValue);
+      }else {
+        this.loadBlock(attribute, newValue);
+      }
+    }
+
+    loadBlock(attribute, stringData) {
+      let cardRow = this.shadowRoot.querySelector(`#${attribute}`);
+      let data = JSON.parse(stringData);
+      let name = attribute.split("-");
+      let newName = [];
+      for (let i of name) {
+        let temp = `${i[0].toUpperCase()}${i.slice(1)}`;
+        newName.push(temp);
+      }
+      if((newName[0] == "Fuel" || newName[0] == "Energy") && newName[1] == "Charge"){
+        let boldLabel = newName.splice(0, 2);
+        
+        if(newName[0] == "On"){
+          let parent = this.shadowRoot.querySelector(`#${boldLabel.join("")}`);
+          let boldLabelEle = document.createElement("h5");
+          boldLabelEle.innerHTML = `${boldLabel.join(" ")}`;
+          boldLabelEle.className = "bold-label";
+          parent.prepend(boldLabelEle);
+        }
+      }
+      newName = newName.join(" ");
+    
+      let ele1 = document.createElement("p");
+      ele1.innerHTML = `${newName}`;
+      ele1.className = "first-label";
+      cardRow.appendChild(ele1);
+
+      let ele2 = document.createElement("p");
+      ele2.innerHTML = `${data.label}`;
+      ele2.className = "sub-label";
+      cardRow.appendChild(ele2);
+
+      let ele3 = document.createElement("p");
+      ele3.innerHTML = `$${data.value}`;
+      ele3.className = "value";
+      cardRow.appendChild(ele3);
+    }
+
+    loadTotal(total){
+      let row = this.shadowRoot.querySelector("#electric-charges-subtotal");
+      let ele1 = document.createElement("p");
+      ele1.innerHTML = `Electric Charges Subtotal`;
+      ele1.className = "first-label";
+      row.appendChild(ele1);
+      let ele2 = document.createElement("p");
+      ele2.innerHTML = `$${total}`;
+      ele2.className = "value";
+      row.appendChild(ele2);
+    }
+
+  }
+  customElements.define("mi-billing-summary", MI_BILLING_SUMMARY);
+</script>
+
 
 <!-- Example For Actual Elements For User To Use -->
 <mi-grapy
@@ -691,4 +951,24 @@
     value-data='[1234324, "23 Days", 225, 245,12.5]'
   >
   </mi-meter-read>
+
+  <mi-billing-summary
+  title="Billing Summary"
+  sectiontitle="⚡ Electric Charges"
+  comment="Service Period: November 25, 2021 - December 28, 2022"
+  clean-energy-transition-mechanism='{"label":"88 kW @ $0.74000 ","value":"96.80"}'
+  environmental-cost-recovery='{"label":"56,240 kWh @ $0.00130/kWh","value":"73.11"}'
+  energy-conservation-charge='{"label":"88 kW @ $0.74000","value":"71.28"}'
+  storm-protection-charge='{"label":"88 kW @ $0.74000","value":"51.92"}'
+  capacity-charge='{"label":"88 kW @ $0.09000/kW","value":"7.92"}'
+  fuel-charge-off-peak='{"label":"43,040 kWh @ $0.02944/kWh","value":"1,267.10"}'
+  fuel-charge-on-peak='{"label":"13,200 kWh @ $0.03318/kWh ","value":"437.98"}'
+  energy-charge-off-peak='{"label":"43,040 kWh @ $0.00566/kWh","value":"243.61"}'
+  energy-charge-on-peak='{"label":"13,200 kWh @ $0.01183/kWh","value":"156.16"}'
+  peak-demand-charge='{"label":"88 kW @ 8.990000/kW","value":"791.12"}'
+  billing-demand-charge='{"label":"88 kW @ 4.40000/kW","value":"387.20"}'
+  daily-basic-service-charge='{"label":"26 days @ $1.07000","value":"36.38"}'
+  total="3,638.58"
+>
+</mi-billing-summary>
 </mi-grapy>
