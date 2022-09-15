@@ -1,10 +1,90 @@
 const miTempBillingPaymentTemplateString =
-    '<style type="text/css">* {font-family: system-ui;}  .card {    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);    transition: 0.3s;    border-radius: 5px;    /* 5px rounded corners */    margin: 10px;    min-width: 300px;    padding: 10px;  }  .card-row {    margin-bottom: 10px;    padding-bottom: 10px;    border-bottom: 1px solid rgba(150, 150, 150, 0.3);  }  #title {    margin: 15px;    color: #1f5da6;    font-weight: 500;  }  .label {    color: #4b4b4b;    font-weight: 500;    padding: 5px 15px;    margin: 0;    font-size: 12px;  }  .sub-label {    color: #4b4b4b;    font-weight: 500;    padding: 5px 15px;    margin: 0;    font-size: 12px;    text-align: end;    font-weight: 700;  }  .sub-label span {    color: #a7a7a7;    font-weight: 500;  }  .value {    padding: 5px 15px;    margin: 0;    font-weight: 600;    font-size: 16px;  }  .linkBox {    text-align: end;    margin: 15px 10px 5px;  }  .card .linkBox #link {    color: #1f5da6;    text-decoration: none;    margin: 10px;    font-weight: 500;    font-size: 12px;  }</style><div class="card">  <h3 id="title"></h3>  <div id="content"></div>  <div class="linkBox">    <a id="link"></a>  </div></div>';
+`
+<style type="text/css">
+* {
+  font-family: system-ui;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  border-radius: 5px;
+  /* 5px rounded corners */
+  margin: 10px;
+  min-width: 300px;
+  padding: 10px;
+}
+
+.card-row {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(150, 150, 150, 0.3);
+}
+
+#title {
+  margin: 15px;
+  color: #1f5da6;
+  font-weight: 500;
+}
+
+.label {
+  color: #4b4b4b;
+  font-weight: 500;
+  padding: 5px 15px;
+  margin: 0;
+  font-size: 12px;
+}
+
+.sub-label {
+  color: #4b4b4b;
+  font-weight: 500;
+  padding: 5px 15px;
+  margin: 0;
+  font-size: 12px;
+  text-align: end;
+  font-weight: 700;
+}
+
+.sub-label span {
+  color: #a7a7a7;
+  font-weight: 500;
+}
+
+.value {
+  padding: 5px 15px;
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.linkBox {
+  text-align: end;
+  margin: 15px 10px 5px;
+}
+
+.card .linkBox #link {
+  color: #1f5da6;
+  text-decoration: none;
+  margin: 10px;
+  font-weight: 500;
+  font-size: 12px;
+}
+</style>
+
+<div class="card">
+<h3 id="title"></h3>
+<div id="content"></div>
+
+<div class="linkBox">
+  <a id="link"></a>
+</div>
+</div>
+`;
 
 const miTempBillingPaymentTemplate = document.createElement("template");
 miTempBillingPaymentTemplate.innerHTML = miTempBillingPaymentTemplateString;
 class MI_BILLING_PAYMENT extends HTMLElement {
-    example = ```
+    example = `
     <mi-billing-payment
         title="Billing & Payment History"
         link="https://www.google.com"
@@ -14,7 +94,7 @@ class MI_BILLING_PAYMENT extends HTMLElement {
         payment-data="[91.46,91.46,91.46,91.46]"
     >
     </mi-billing-payment>
-    ```;
+    `;
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
