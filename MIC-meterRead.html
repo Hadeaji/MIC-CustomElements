@@ -1,4 +1,4 @@
-<template id="mi-temp-meter-read">
+<template id="mic-temp-meter-read">
     <style type="text/css">
         * {
             font-family: system-ui;
@@ -90,8 +90,8 @@
 
 
 <script>
-    const myTemplate = document.querySelector('#mi-temp-meter-read');
-    class MI_METER_READ extends HTMLElement {
+    const myTemplate = document.querySelector('#mic-temp-meter-read');
+    class MIC_METER_READ extends HTMLElement {
         constructor() {
             super();
             this.attachShadow({ mode: 'open' });
@@ -151,10 +151,10 @@
         }
 
     }
-    customElements.define('mi-meter-read', MI_METER_READ);
+    customElements.define('mic-meter-read', MIC_METER_READ);
 </script>
 
-<mi-meter-read title="Meter Read" link="www.google.com" link-msg="View Meter Details"
+<mic-meter-read title="Meter Read" link="www.google.com" link-msg="View Meter Details"
     label-data='["Meter Number","Passed Days", "Current Reading","Previous Reading","Total Used"]'
     value-data='[1234324, "23 Days", 225, 245,12.5]'>
-</mi-meter-read>
+</mic-meter-read>

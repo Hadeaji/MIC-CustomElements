@@ -1,4 +1,4 @@
-<template id="mi-temp-billing-summary">
+<template id="mic-temp-billing-summary">
   <style type="text/css">
     * {
       font-family: system-ui;
@@ -156,15 +156,15 @@
 </template>
 
 <script>
-  const miTempBillingSummaryTemplate = document.querySelector(
-    "#mi-temp-billing-summary"
+  const micTempBillingSummaryTemplate = document.querySelector(
+    "#mic-temp-billing-summary"
   );
-  class MI_BILLING_SUMMARY extends HTMLElement {
+  class MIC_BILLING_SUMMARY extends HTMLElement {
     constructor() {
       super();
       this.attachShadow({ mode: "open" });
       this.shadowRoot.appendChild(
-        miTempBillingSummaryTemplate.content.cloneNode(true)
+        micTempBillingSummaryTemplate.content.cloneNode(true)
       );
     }
 
@@ -255,10 +255,10 @@
     }
 
   }
-  customElements.define("mi-billing-summary", MI_BILLING_SUMMARY);
+  customElements.define("mic-billing-summary", MIC_BILLING_SUMMARY);
 </script>
 
-<mi-billing-summary
+<mic-billing-summary
   title="Billing Summary"
   sectiontitle="⚡ Electric Charges"
   comment="Service Period: November 25, 2021 - December 28, 2022"
@@ -276,4 +276,4 @@
   daily-basic-service-charge='{"label":"26 days @ $1.07000","value":"36.38"}'
   total="3,638.58"
 >
-</mi-billing-summary>
+</mic-billing-summary>

@@ -1,7 +1,11 @@
-<template id="mi-temp-billing-payment">
+<template id="mic-temp-billing-payment">
   <style type="text/css">
     * {
       font-family: system-ui;
+    }
+
+    h3 {
+      text-align: left;
     }
 
     .card {
@@ -81,15 +85,15 @@
 </template>
 
 <script>
-  const miTempBillingPaymentTemplate = document.querySelector(
-    "#mi-temp-billing-payment"
+  const micTempBillingPaymentTemplate = document.querySelector(
+    "#mic-temp-billing-payment"
   );
-  class MI_BILLING_PAYMENT extends HTMLElement {
+  class MIC_BILLING_PAYMENT extends HTMLElement {
     constructor() {
       super();
       this.attachShadow({ mode: "open" });
       this.shadowRoot.appendChild(
-        miTempBillingPaymentTemplate.content.cloneNode(true)
+        micTempBillingPaymentTemplate.content.cloneNode(true)
       );
     }
 
@@ -173,10 +177,10 @@
       });
     }
   }
-  customElements.define("mi-billing-payment", MI_BILLING_PAYMENT);
+  customElements.define("mic-billing-payment", MIC_BILLING_PAYMENT);
 </script>
 
-<mi-billing-payment
+<mic-billing-payment
   title="Billing & Payment History"
   link="https://www.google.com"
   link-msg="View More"
@@ -184,4 +188,4 @@
   bill-data="[91.46,91.46,91.46,91.46]"
   payment-data="[91.46,91.46,91.46,91.46]"
 >
-</mi-billing-payment>
+</mic-billing-payment>

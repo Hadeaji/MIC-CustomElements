@@ -1,0 +1,177 @@
+
+
+<template id="mic-Wrapper">
+  <style type="text/css">
+    .box {
+      border-radius: 0.5em;
+      padding: 2px;
+      cursor: move;
+    }
+
+    .box.over {
+      border: 3px dotted #666;
+    }
+
+    [draggable] {
+      user-select: none;
+    }
+
+    .container {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      grid-auto-flow: row;
+    }
+  </style>
+
+  <div id="container" class="container"></div>
+</template>
+
+<script>
+  const micWrapperTemplate = document.querySelector("#mic-Wrapper");
+  class MIC_Wrapper extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+      this.shadowRoot.appendChild(micWrapperTemplate.content.cloneNode(true));
+      this.onMutation = this.onMutation.bind(this);
+      linkEvents(this.shadowRoot);
+    }
+
+    static get observedAttributes() {
+      return [
+        "map_style",
+      ];
+    }
+
+    attributeChangedCallback(attribute, oldValue, newValue) {
+      if (attribute == "map_style") {
+        this.shadowRoot.querySelector("#container").setAttribute("style", newValue);
+      }
+    }
+
+    connectedCallback() {
+      // Set up observer
+      this.observer = new MutationObserver(this.onMutation);
+
+      // Watch the Light DOM for child node changes
+      this.observer.observe(this, { childList: true });
+    }
+
+    disconnectedCallback() {
+      // remove observer if element is no longer connected to DOM
+      this.observer.disconnect();
+    }
+
+    onMutation(mutations) {
+      const added = [];
+
+      // A `mutation` is passed for each new node
+      for (const mutation of mutations) {
+        // Could test for `mutation.type` here, but since we only have
+        // set up one observer type it will always be `childList`
+        added.push(...mutation.addedNodes);
+      }
+
+      let divs = added.filter((el) => el.nodeType === Node.ELEMENT_NODE);
+      this.setUpBoxes(divs);
+    }
+
+    setUpBoxes(childs) {
+      this.disconnectedCallback();
+      childs.forEach((ele) => {
+        let wrappedEle = this.wrap(ele);    
+        this.shadowRoot.querySelector("#container").appendChild(wrappedEle);
+      });
+      this.connectedCallback();
+
+      console.log("item");
+    }
+
+    wrap(el) {
+      let wrapper = document.createElement("div");
+      wrapper.setAttribute("class", "box");
+      wrapper.setAttribute("draggable", "true");
+      el.parentNode.insertBefore(wrapper, el);
+      wrapper.appendChild(el);
+      return wrapper;
+    }
+  }
+  customElements.define("mic-Wrapper", MIC_Wrapper);
+
+  function linkEvents(shadowRoot) {
+    document.addEventListener("DOMContentLoaded", (event) => {
+      var dragSrcEl = null;
+
+      function handleDragStart(e) {
+        this.style.opacity = "0.4";
+
+        dragSrcEl = this;
+
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/html", this.innerHTML);
+      }
+
+      function handleDragOver(e) {
+        if (e.preventDefault) {
+          e.preventDefault();
+        }
+
+        e.dataTransfer.dropEffect = "move";
+
+        return false;
+      }
+
+      function handleDragEnter(e) {
+        this.classList.add("over");
+      }
+
+      function handleDragLeave(e) {
+        this.classList.remove("over");
+      }
+
+      function handleDrop(e) {
+        if (e.stopPropagation) {
+          e.stopPropagation(); // stops the browser from redirecting.
+        }
+
+        if (dragSrcEl != this) {
+          dragSrcEl.innerHTML = this.innerHTML;
+          this.innerHTML = e.dataTransfer.getData("text/html");
+        }
+
+        return false;
+      }
+
+      function handleDragEnd(e) {
+        this.style.opacity = "1";
+
+        items.forEach(function (item) {
+          item.classList.remove("over");
+        });
+      }
+
+      let items = shadowRoot.querySelectorAll(".container .box");
+      console.log(items);
+      items.forEach(function (item) {
+        item.addEventListener("dragstart", handleDragStart, false);
+        item.addEventListener("dragenter", handleDragEnter, false);
+        item.addEventListener("dragover", handleDragOver, false);
+        item.addEventListener("dragleave", handleDragLeave, false);
+        item.addEventListener("drop", handleDrop, false);
+        item.addEventListener("dragend", handleDragEnd, false);
+      });
+    });
+  }
+</script>
+
+<!-- Example For Actual Elements For User To Use -->
+<mic-Wrapper
+class="container"
+map_style="display: grid; grid-template-columns: 30% 2fr 1fr;"
+>
+  <p>AidA</p>
+  <p>AidB</p>
+  <p>AidD</p>
+</mic-Wrapper>
