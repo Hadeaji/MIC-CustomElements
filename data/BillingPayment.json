@@ -1,0 +1,27 @@
+{
+    "title": "Billing & Payment History",
+    "linkMessage": "View More",
+    "link": "https://www.google.com",
+    "records": [
+        {
+            "date":"November 2, 2021",
+            "bill": 91.46,
+            "payment": 91.46
+        },
+        {
+            "date":"October 2, 2021",
+            "bill": 91.46,
+            "payment": 91.46
+        },
+        {
+            "date":"September 2, 2021",
+            "bill": 91.46,
+            "payment": 91.46
+        },
+        {
+            "date":"Augest 2, 2021",
+            "bill": 91.46,
+            "payment": 91.46
+        }
+    ]
+}
