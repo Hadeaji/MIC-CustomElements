@@ -1,5 +1,5 @@
 const miTempBillingPaymentTemplateString =
-`
+    `
 <style type="text/css">
 * {
   font-family: system-ui;
@@ -88,60 +88,59 @@ miTempBillingPaymentTemplate.innerHTML = miTempBillingPaymentTemplateString;
 class MI_BILLING_PAYMENT extends HTMLElement {
     example = `
     <mi-billing-payment
-        title="Billing & Payment History"
-        link="https://www.google.com"
-        link-msg="View More"
-        dates-data='["November 2, 2021","October 2, 2021", "September 2, 2021","Augest 2, 2021"]'
-        bill-data="[91.46,91.46,91.46,91.46]"
-        payment-data="[91.46,91.46,91.46,91.46]"
+    api-key="#########"
     >
     </mi-billing-payment>
     `;
+    apikey;
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
         this.shadowRoot.appendChild(
             miTempBillingPaymentTemplate.content.cloneNode(true)
         );
+        this.load();
     }
 
     static get observedAttributes() {
         return [
-            "title",
-            "link",
-            "link-msg",
-            "dates-data",
-            "bill-data",
-            "payment-data",
+            "api-key",
         ];
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
-        if (attribute == "title") {
-            this.shadowRoot.querySelector("#title").innerHTML =
-                newValue.toUpperCase();
+        if (attribute == "api-key") {
+            this.apikey = newValue;
         }
-        if (attribute == "link") {
-            this.shadowRoot.querySelector("#link").href = newValue;
-        }
-        if (attribute == "link-msg") {
-            this.shadowRoot.querySelector("#link").innerHTML = newValue + " >";
-        }
+    }
 
-        if (attribute == "dates-data") {
-            let data = JSON.parse(newValue);
-            this.loadDates(data);
-        }
+    load() {
+        fetch("./data/BillingPayment.json")
+            .then(
+                response => response.json()
+            )
+            .then((data) => {
 
-        if (attribute == "payment-data") {
-            let data = JSON.parse(newValue);
-            this.loadPayment(data);
-        }
+                if (!this.apikey) {
+                    this.shadowRoot.querySelector("#content").innerHTML = "<p>Please provide api key</p>"
+                    return;
+                }
 
-        if (attribute == "bill-data") {
-            let data = JSON.parse(newValue);
-            this.loadBills(data);
-        }
+                // example for showcasing only, error would return ffrom the api
+                if (this.apikey != "12345") {
+                    this.shadowRoot.querySelector("#content").innerHTML = "<p>invalid api key </p>"
+                    return;
+                }
+                this.shadowRoot.querySelector("#title").innerHTML = data.title.toUpperCase();
+                this.shadowRoot.querySelector("#link").innerHTML = data.linkMessage + " >";
+                this.shadowRoot.querySelector("#link").href = data.link;
+
+                this.loadDates(data.records.map((record) => record.date));
+                this.loadBills(data.records.map((record) => record.bill));
+                this.loadPayment(data.records.map((record) => record.payment));
+
+            }
+            );
     }
 
     loadDates(arr) {
