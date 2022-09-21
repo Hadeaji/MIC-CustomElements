@@ -115,7 +115,7 @@ class MI_BILLING_PAYMENT extends HTMLElement {
     }
 
     load() {
-        fetch("./data/BillingPayment.json")
+        fetch("https://cdn.jsdelivr.net/gh/Hadeaji/MIC-CustomElements@master/data/BillingPayment.json")
             .then(
                 response => response.json()
             )
@@ -140,7 +140,10 @@ class MI_BILLING_PAYMENT extends HTMLElement {
                 this.loadPayment(data.records.map((record) => record.payment));
 
             }
-            );
+            ).catch(err => {
+                this.shadowRoot.querySelector("#content").innerHTML = "<p>Error Happened while calling for data</p>"
+                console.log(err);
+            });
     }
 
     loadDates(arr) {
