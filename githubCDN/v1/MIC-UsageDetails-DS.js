@@ -73,12 +73,6 @@ const miTempUsageDetailsTemplateString =
     </div>
 `;
 
-// Imported packages
-var apexcharts = document.createElement('script');  
-apexcharts.setAttribute('src','https://cdn.jsdelivr.net/npm/apexcharts');
-document.head.appendChild(apexcharts);
-//
-
 const miTempUsageDetailsTemplate = document.createElement("template");
 miTempUsageDetailsTemplate.innerHTML = miTempUsageDetailsTemplateString;
 class MIC_CHART extends HTMLElement {
